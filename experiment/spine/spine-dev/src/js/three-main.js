@@ -19,6 +19,11 @@ let threeParams = {
     renderer:{
         width:300,
         height:300
+    },
+    assetManager:{
+        assetsDirUrl:"assets/",
+        skeletonFile:"raptor-pro.json",
+        atlasFile:"raptor.atlas"
     }
 }
 
@@ -66,9 +71,9 @@ class AssetManager{
         this.assetManager = null;
     }
     create(){
-        this.assetManager = new spine.threejs.AssetManager(assetsDirUrl);
-        this.assetManager.loadText(skeletonFile);
-        this.assetManager.loadTextureAtlas(atlasFile);
+        this.assetManager = new spine.threejs.AssetManager(this.assetsDirUrl);
+        this.assetManager.loadText(this.skeletonFile);
+        this.assetManager.loadTextureAtlas(this.atlasFile);
         return this.assetManager;
     }
 }
@@ -85,16 +90,31 @@ class Canvas{
     }
 }
 
-//カメラ生成
-threeObjects.camera = new Camera(threeParams).create();
-//レンダラー生成
-threeObjects.renderer = new Renderer(threeParams).create();
-//アセットマネージャー生成
-threeObjects.assetManager = new AssetManager(threeParams).create();
-//canvas生成
-canvas = new Canvas(threeObjects.renderer);
-canvas.create();
-canvas = canvas.getElement();
+function load(){
+    //アセットマネージャー読み込み完了後、処理を開始する
+    if(threeObjects.assetManager.isLoadingComplete()){
+        console.log("assetManager.isLoadingComplete");
+    }else{
+        requestAnimationFrame(load)
+    };
+}
 
-console.log(canvas);
-console.log(threeObjects);
+function init(){
+    //カメラ生成
+    threeObjects.camera = new Camera(threeParams).create();
+    //レンダラー生成
+    threeObjects.renderer = new Renderer(threeParams).create();
+    //アセットマネージャー生成
+    threeObjects.assetManager = new AssetManager(threeParams).create();
+    //canvas生成
+    canvas = new Canvas(threeObjects.renderer);
+    canvas.create();
+    canvas = canvas.getElement();
+
+    console.log(canvas);
+    console.log(threeObjects);
+    
+    //ロード開始
+    requestAnimationFrame(load);
+}
+init();
