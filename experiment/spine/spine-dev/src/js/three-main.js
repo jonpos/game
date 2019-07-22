@@ -2,7 +2,7 @@ let threeObjects = {
   camera: null,
   renderer: null,
   assetManager: null,
-  geometry: null,
+  wrapGeometry: null,
   skeletonMesh:null
 };
 
@@ -14,7 +14,7 @@ let threeParams = {
     far: 3000,
     position: {
       x: 0,
-      y: 100,
+      y: 0,
       z: 400
     }
   },
@@ -32,10 +32,12 @@ let threeParams = {
     atlasLoader: null
   },
   geometry: {
-    chara: {
-      geometry: null,
-      material: null,
-      mesh: null
+    mesh:{
+      position:{
+        x:0,
+        y:0,
+        z:0
+      }
     }
   },
   scene: null
@@ -108,7 +110,7 @@ class CreateSkeletonMesh {
     this.atlas = this.assetManager.get(this.atlasFile);
     this.atlasLoader = new spine.AtlasAttachmentLoader(this.atlas);
     this.skeletonJson = new spine.SkeletonJson(this.atlasLoader);
-    this.skeletonJson.scale = 0.4;
+    this.skeletonJson.scale = 0.15;
     this.skeletonData = this.skeletonJson.readSkeletonData(this.assetManager.get(this.skeletonFile));
     this.skeletonMesh = new spine.threejs.SkeletonMesh(this.skeletonData);
     this.skeletonAnimationNum = 0;
@@ -120,9 +122,12 @@ class CreateSkeletonMesh {
 
 class WrapGeometry {
   constructor(threeParams) {
-    this.geometry = new THREE.BoxGeometry(200, 200, 200);
-    this.material = new THREE.MeshBasicMaterial({ visible: false });
+    this.geometry = new THREE.BoxGeometry(100, 200, 0);
+    this.material = new THREE.MeshBasicMaterial({ visible: true });
     this.mesh = new THREE.Mesh(this.geometry, this.material);
+    this.mesh.position.x = threeParams.geometry.mesh.position.x;
+    this.mesh.position.y = threeParams.geometry.mesh.position.y;
+    this.mesh.position.z = threeParams.geometry.mesh.position.z;
   }
 }
 
@@ -167,11 +172,11 @@ function rendering() {
 function load() {
   //アセットマネージャー読み込み完了後、処理を開始する
   if (threeObjects.assetManager.isLoadingComplete()) {
-    let wrapGeometry = new WrapGeometry(threeParams);
-    threeObjects.scene.add(wrapGeometry.mesh);
-    console.log(threeObjects.assetManager);
+    threeObjects.wrapGeometry = new WrapGeometry(threeParams);
+    threeObjects.scene.add(threeObjects.wrapGeometry.mesh);
     threeObjects.skeletonMesh = new CreateSkeletonMesh(threeObjects, threeParams);
     threeObjects.scene.add(threeObjects.skeletonMesh);
+    threeObjects.wrapGeometry.mesh.add(threeObjects.skeletonMesh);
     console.log("assetManager.isLoadingComplete");
     //レンダリング開始
     rendering();
