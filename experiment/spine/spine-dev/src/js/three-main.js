@@ -32,6 +32,11 @@ let threeParams = {
     atlasLoader: null
   },
   geometry: {
+    size:{
+      x: 190,
+      y: 180,
+      z:0
+    },
     mesh:{
       position:{
         x:0,
@@ -114,7 +119,9 @@ class CreateSkeletonMesh {
     this.skeletonData = this.skeletonJson.readSkeletonData(this.assetManager.get(this.skeletonFile));
     this.skeletonMesh = new spine.threejs.SkeletonMesh(this.skeletonData);
     this.skeletonAnimationNum = 0;
-    this.skeletonAnimationType = "walk";
+    // this.skeletonAnimationType = "walk";
+    this.skeletonAnimationType = "jump";
+
     this.skeletonMesh.state.setAnimation(this.skeletonAnimationNum, this.skeletonAnimationType, true);
     return this.skeletonMesh;
   }
@@ -122,7 +129,7 @@ class CreateSkeletonMesh {
 
 class WrapGeometry {
   constructor(threeParams) {
-    this.geometry = new THREE.BoxGeometry(100, 200, 0);
+    this.geometry = new THREE.BoxGeometry(threeParams.geometry.size.x, threeParams.geometry.size.y, threeParams.geometry.size.z);
     this.material = new THREE.MeshBasicMaterial({ visible: true });
     this.mesh = new THREE.Mesh(this.geometry, this.material);
     this.mesh.position.x = threeParams.geometry.mesh.position.x;
@@ -156,7 +163,7 @@ class Canvas {
 const lastTime = Date.now();
 let lastFrameTime = Date.now() / 1000;
 function rendering() {
-  console.log(threeObjects);
+  console.log(threeObjects.skeletonMesh);
 
   const now = Date.now() / 1000;
   const delta = now - lastFrameTime;
@@ -176,8 +183,14 @@ function load() {
     threeObjects.scene.add(threeObjects.wrapGeometry.mesh);
     threeObjects.skeletonMesh = new CreateSkeletonMesh(threeObjects, threeParams);
     threeObjects.scene.add(threeObjects.skeletonMesh);
+    // threeObjects.skeletonMesh.add(threeObjects.wrapGeometry.mesh);
     threeObjects.wrapGeometry.mesh.add(threeObjects.skeletonMesh);
+    threeObjects.skeletonMesh.position.y = -75;
+    threeObjects.skeletonMesh.position.x = -10;
+    //カメラ初期位置の設定
+    // threeObjects.camera.position.x = (window.innerWidth / 2) - threeParams.geometry.size.x;
     console.log("assetManager.isLoadingComplete");
+    console.log(threeObjects);
     //レンダリング開始
     rendering();
   } else {
