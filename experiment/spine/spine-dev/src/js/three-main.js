@@ -120,7 +120,7 @@ class CreateSkeletonMesh {
     this.skeletonMesh = new spine.threejs.SkeletonMesh(this.skeletonData);
     this.skeletonAnimationNum = 0;
     // this.skeletonAnimationType = "walk";
-    this.skeletonAnimationType = "jump";
+    this.skeletonAnimationType = "roar";
 
     this.skeletonMesh.state.setAnimation(this.skeletonAnimationNum, this.skeletonAnimationType, true);
     return this.skeletonMesh;
